@@ -18,15 +18,15 @@ public class Enemy : MonoBehaviour
     {
          transform.Translate(new Vector3(0, -1, 0) * _speed * Time.deltaTime);
 
-        if (transform.position.y < -5.4f)
+        if (transform.position.y < -6f)
         {
-            transform.position = new Vector3(Random.Range(-9.4f, 9.4f), 7.4f, 0);
+            transform.position = new Vector3(Random.Range(-9.44f, 9.46f), 8f, 0);
         }    
     }
 
    
     // OnTriggerEnter is called when this gameobject collides with another
-    private void OnTriggerEnter(Collider other)
+    private void OnTriggerEnter2D(Collider2D other)
     {
          if(other.CompareTag("Player"))
         {

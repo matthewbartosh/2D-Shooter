@@ -2,11 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-// Public or private reference
-// Data type (int, float, bool, string)
-// Every variable has a name
-// Optional value assigned
-
 public class Player : MonoBehaviour
 {
     [SerializeField]
@@ -56,13 +51,13 @@ public class Player : MonoBehaviour
 
         transform.position = new Vector3(transform.position.x, Mathf.Clamp(transform.position.y, -3.8f, 0), 0);
 
-        if (transform.position.x > 11.3f)
+        if (transform.position.x > 11.1f)
         {
-            transform.position = new Vector3(-11.3f, transform.position.y, 0);
+            transform.position = new Vector3(-11.1f, transform.position.y, 0);
         }
-        else if (transform.position.x < -11.3f)
+        else if (transform.position.x < -11.1f)
         {
-            transform.position = new Vector3(11.3f, transform.position.y, 0);
+            transform.position = new Vector3(11.1f, transform.position.y, 0);
         }
     }
 
@@ -70,7 +65,7 @@ public class Player : MonoBehaviour
     void FireLaser()
     {
         _canFire = Time.time + _fireRate;
-        Instantiate(_laserPrefab, transform.position + new Vector3(0, .7f, 0), Quaternion.identity);
+        Instantiate(_laserPrefab, transform.position + new Vector3(0, 1.005f, 0), Quaternion.identity);
     }
 
     // Damage handles player health
