@@ -7,20 +7,14 @@ public class Enemy : MonoBehaviour
     [SerializeField]
     private float _speed = 4.0f;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
     // Update is called once per frame
     void Update()
     {
          transform.Translate(new Vector3(0, -1, 0) * _speed * Time.deltaTime);
 
-        if (transform.position.y < -6f)
+        if (transform.position.y < -9f)
         {
-            transform.position = new Vector3(Random.Range(-9.44f, 9.46f), 8f, 0);
+            transform.position = new Vector3(Random.Range(-14.55f, 14.55f), 10.8f, 0);
         }    
     }
 

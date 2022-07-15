@@ -9,28 +9,41 @@ public class SpawnManager : MonoBehaviour
     [SerializeField]
     private GameObject _enemyContainer;
     [SerializeField]
-    private float _waitTime = 5f;
+    private GameObject[] _powerups;
+    [SerializeField]
+    private float _enemySpawnTime = 3f;
     private bool _stopSpawning = false;
+    [SerializeField]
+    private float _minPowerupSpawnTime = 3f;
+    [SerializeField]
+    private float _maxPowerupSpawnTime = 7f;
 
     // Start is called before the first frame update
     void Start()
     {
-        StartCoroutine(SpawnRoutine());
+        StartCoroutine(SpawnEnemyRoutine());
+        StartCoroutine(SpawnPowerupRoutine());
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
-    IEnumerator SpawnRoutine()
+    IEnumerator SpawnEnemyRoutine()
     {
         while (_stopSpawning == false)
         {
-            GameObject newEnemy = Instantiate(_enemyPrefab, new Vector3(Random.Range(-9.44f, 9.46f), 7.9f, 0), Quaternion.identity);
+            Vector3 posToSpawn = new Vector3(Random.Range(-14.55f, 14.55f), 10.8f, 0);
+            GameObject newEnemy = Instantiate(_enemyPrefab, posToSpawn, Quaternion.identity);
             newEnemy.transform.parent = _enemyContainer.transform;
-            yield return new WaitForSeconds(_waitTime);
+            yield return new WaitForSeconds(_enemySpawnTime);
+        }
+    }
+
+    IEnumerator SpawnPowerupRoutine()
+    {
+        while (_stopSpawning == false)
+        {
+            Vector3 posToSpawn = new Vector3(Random.Range(-14.55f, 14.55f), 10.8f, 0);
+            int randomPowerUp = Random.Range(0, 2);
+            Instantiate(_powerups[randomPowerUp], posToSpawn, Quaternion.identity);
+            yield return new WaitForSeconds(Random.Range(_minPowerupSpawnTime, _maxPowerupSpawnTime));
         }
     }
 
