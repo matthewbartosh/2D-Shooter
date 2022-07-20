@@ -17,10 +17,10 @@ public class SpawnManager : MonoBehaviour
     private float _minPowerupSpawnTime = 3f;
     [SerializeField]
     private float _maxPowerupSpawnTime = 7f;
-    private Enemy _currentEnemies;
+    [SerializeField]
+    private float _timeTilSpawn = 1.3f;
 
-    // Start is called before the first frame update
-    void Start()
+    public void StartSpawning()
     {
         StartCoroutine(SpawnEnemyRoutine());
         StartCoroutine(SpawnPowerupRoutine());
@@ -28,6 +28,7 @@ public class SpawnManager : MonoBehaviour
 
     IEnumerator SpawnEnemyRoutine()
     {
+        yield return new WaitForSeconds(_timeTilSpawn);
         while (_stopSpawning == false)
         {
             Vector3 posToSpawn = new Vector3(Random.Range(-14.55f, 14.55f), 10.8f, 0);
@@ -39,6 +40,7 @@ public class SpawnManager : MonoBehaviour
 
     IEnumerator SpawnPowerupRoutine()
     {
+        yield return new WaitForSeconds(_timeTilSpawn);
         while (_stopSpawning == false)
         {
             Vector3 posToSpawn = new Vector3(Random.Range(-14.55f, 14.55f), 10.8f, 0);

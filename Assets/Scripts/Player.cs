@@ -31,9 +31,12 @@ public class Player : MonoBehaviour
     [SerializeField]
     private GameObject _shieldVisual;
     //score and UI
-    [SerializeField]
     private int _score;
     private UIManager _uiManager;
+    [SerializeField]
+    private GameObject _damageR;
+    [SerializeField]
+    private GameObject _damageL;
 
     // Start is called before the first frame update
     void Start()
@@ -51,6 +54,9 @@ public class Player : MonoBehaviour
         {
             Debug.LogError("The UI Manager is NULL.");
         }
+
+        _damageL.SetActive(false);
+        _damageR.SetActive(false);
     }
 
     // Update is called once per frame
@@ -123,8 +129,16 @@ public class Player : MonoBehaviour
         _lives -= 1;
 
         _uiManager.UpdateLives(_lives);
-        
-        if(_lives < 1)
+
+        if (_lives == 2)
+        {
+            _damageL.SetActive(true);
+        }
+        else if (_lives == 1)
+        {
+            _damageR.SetActive(true);
+        }
+        else if (_lives < 1)
         {
             _spawnManager.OnPlayerDeath();
             _uiManager.GameOverUI();
@@ -172,4 +186,6 @@ public class Player : MonoBehaviour
         _score += points;
         _uiManager.UpdateScore(_score);
     }
+
+
 }   
