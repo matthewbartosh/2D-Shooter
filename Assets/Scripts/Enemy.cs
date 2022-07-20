@@ -9,11 +9,14 @@ public class Enemy : MonoBehaviour
     private Player _player;
     private Animator _anim;
     private BoxCollider2D _bc;
-
+    private AudioSource _audioSource;
+    [SerializeField]
+    private AudioClip _explosionSound;
 
     void Start()
     {
         _player = GameObject.Find("Player").GetComponent<Player>();
+        _audioSource = GetComponent<AudioSource>();
 
         if (_player == null)
         {
@@ -33,6 +36,15 @@ public class Enemy : MonoBehaviour
         {
             Debug.LogError("Box Collider is NULL.");
         }
+
+        if (_audioSource == null)
+        {
+            Debug.LogError("The Audio Source on enemy is NULL.");
+        }
+        else
+        {
+            _audioSource.clip = _explosionSound;
+        }
     }
 
     // Update is called once per frame
@@ -44,8 +56,6 @@ public class Enemy : MonoBehaviour
         {
             transform.position = new Vector3(Random.Range(-14.55f, 14.55f), 10.8f, 0);
         }
-        
-
     }
 
 
@@ -77,6 +87,7 @@ public class Enemy : MonoBehaviour
         _anim.SetTrigger("OnEnemyDeath");
         _bc.enabled = false;
         _speed = 1.5f;
+        _audioSource.Play();
         if (transform.position.y >= -5.5f)
         {
             yield return new WaitForSeconds(2.35f);
@@ -88,5 +99,7 @@ public class Enemy : MonoBehaviour
             Destroy(this.gameObject);
         }
         
-    }
+    } 
+   
+   
 }

@@ -37,6 +37,11 @@ public class Player : MonoBehaviour
     private GameObject _damageR;
     [SerializeField]
     private GameObject _damageL;
+    [SerializeField]
+    private AudioClip _laserShot;
+    [SerializeField]
+    private AudioClip _powerUpPickup;
+    private AudioSource _audioSource;
 
     // Start is called before the first frame update
     void Start()
@@ -44,6 +49,7 @@ public class Player : MonoBehaviour
         transform.position = new Vector3(0, 0, 0);
         _spawnManager = GameObject.Find("Spawn_Manager").GetComponent<SpawnManager>();
         _uiManager = GameObject.Find("Canvas").GetComponent<UIManager>();
+        _audioSource = GetComponent<AudioSource>();
 
         if (_spawnManager == null)
         {
@@ -53,6 +59,11 @@ public class Player : MonoBehaviour
         if (_uiManager == null)
         {
             Debug.LogError("The UI Manager is NULL.");
+        }
+
+        if (_audioSource == null)
+        {
+            Debug.LogError("The Audio Source on Player is NULL.");
         }
 
         _damageL.SetActive(false);
@@ -109,11 +120,15 @@ public class Player : MonoBehaviour
         if ( _isTripleShotActive == true)
         {
             Instantiate(_tripleShotPrefab, transform.position, Quaternion.identity);
+            
         }
         else
         {
             Instantiate(_laserPrefab, transform.position + new Vector3(0, 1.005f, 0), Quaternion.identity);
+            
         }
+
+        _audioSource.PlayOneShot(_laserShot, .45f);
     }
 
     // Damage handles player health
@@ -150,6 +165,7 @@ public class Player : MonoBehaviour
     public void TripleShotActive()
     {
         _isTripleShotActive = true;
+        _audioSource.PlayOneShot(_powerUpPickup);
         StartCoroutine(TripleShotPowerDown());
     }
 
@@ -163,6 +179,7 @@ public class Player : MonoBehaviour
     public void SpeedBoostActive()
     {
         _isSpeedBoostActive = true;
+        _audioSource.PlayOneShot(_powerUpPickup);
         StartCoroutine(SpeedBoostPowerDown());
     }
 
@@ -176,6 +193,7 @@ public class Player : MonoBehaviour
     public void ShieldActive()
     {
         _isShieldActive = true;
+        _audioSource.PlayOneShot(_powerUpPickup);
         _shieldVisual.SetActive(true);
     }
 
