@@ -9,9 +9,14 @@ public class Enemy : MonoBehaviour
     private Player _player;
     private Animator _anim;
     private BoxCollider2D _bc;
+    [SerializeField]
+    private GameObject _enemyLaser;
     private AudioSource _audioSource;
     [SerializeField]
     private AudioClip _explosionSound;
+    private float _canFire;
+    [SerializeField]
+    private AudioClip _laserShot;
 
     void Start()
     {
@@ -45,6 +50,8 @@ public class Enemy : MonoBehaviour
         {
             _audioSource.clip = _explosionSound;
         }
+        
+        _canFire = Time.time + Random.Range(2f, 7f);
     }
 
     // Update is called once per frame
@@ -55,6 +62,11 @@ public class Enemy : MonoBehaviour
         if (transform.position.y < -11f)
         {
             transform.position = new Vector3(Random.Range(-14.55f, 14.55f), 10.8f, 0);
+        }
+
+        if (Time.time > _canFire)
+        {
+            FireLaser();
         }
     }
 
@@ -85,6 +97,7 @@ public class Enemy : MonoBehaviour
     IEnumerator DeathAnim()
     {
         _anim.SetTrigger("OnEnemyDeath");
+        _canFire = Time.time + 10f;
         _bc.enabled = false;
         _speed = 1.5f;
         _audioSource.Play();
@@ -101,5 +114,19 @@ public class Enemy : MonoBehaviour
         
     } 
    
+    void FireLaser()
+    {
+        _canFire = Time.time + Random.Range(1f, 3f);
+
+        GameObject enemyLaser = Instantiate(_enemyLaser, transform.position + new Vector3(0, -.8f, 0), Quaternion.identity);
+        Laser[] lasers = enemyLaser.GetComponentsInChildren<Laser>();
+
+        for (int i = 0; i < lasers.Length; i++)
+        {
+            lasers[i].AssignEnemyLaser();
+        }
+
+        _audioSource.PlayOneShot(_laserShot, .35f);
+    }
    
 }

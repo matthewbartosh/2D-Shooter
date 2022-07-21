@@ -41,6 +41,8 @@ public class Player : MonoBehaviour
     private AudioClip _laserShot;
     [SerializeField]
     private AudioClip _powerUpPickup;
+    [SerializeField]
+    private AudioClip _explosionSound;
     private AudioSource _audioSource;
 
     // Start is called before the first frame update
@@ -140,7 +142,7 @@ public class Player : MonoBehaviour
             _shieldVisual.SetActive(false);
             return;
         }
-
+         
         _lives -= 1;
 
         _uiManager.UpdateLives(_lives);
@@ -204,6 +206,4 @@ public class Player : MonoBehaviour
         _score += points;
         _uiManager.UpdateScore(_score);
     }
-
-
 }   
