@@ -7,6 +7,9 @@ public class Player : MonoBehaviour
     [SerializeField]
     private float _speed = 5f;
     [SerializeField]
+    private float _thrusterSpeed = 9f;
+    private float _defaultSpeed;
+    [SerializeField]
     private GameObject _laserPrefab;
     [SerializeField]
     private GameObject _tripleShotPrefab;
@@ -23,13 +26,15 @@ public class Player : MonoBehaviour
     //Speed Boost
     private bool _isSpeedBoostActive = false;
     [SerializeField]
-    private float _speedBoostSpeed = 10f;
+    private float _speedBoostSpeed = 14f;
     [SerializeField]
     private float _speedBoostActivationTime = 5.0f;
     //Shield
     private bool _isShieldActive = false;
     [SerializeField]
     private GameObject _shieldVisual;
+    [SerializeField]
+    private int _shieldStrength;
     //score and UI
     private int _score;
     private UIManager _uiManager;
@@ -70,6 +75,8 @@ public class Player : MonoBehaviour
 
         _damageL.SetActive(false);
         _damageR.SetActive(false);
+
+        _defaultSpeed = _speed;
     }
 
     // Update is called once per frame
@@ -111,7 +118,14 @@ public class Player : MonoBehaviour
             transform.position = new Vector3(16.15f, transform.position.y, 0);
         }
 
-       
+        if (Input.GetKey(KeyCode.LeftShift))
+        {
+            Thruster();
+        }
+        else
+        {
+            _speed = _defaultSpeed;
+        }
     }
 
     // FireLaser handles instantiating the laser
@@ -136,10 +150,18 @@ public class Player : MonoBehaviour
     // Damage handles player health
     public void Damage()
     {
-         if (_isShieldActive == true)
+        if (_isShieldActive == true)
         {
-            _isShieldActive = false;
-            _shieldVisual.SetActive(false);
+            if (_shieldStrength < 0) _shieldStrength--;
+
+            _uiManager.ShieldLife(_shieldStrength);
+
+            if (_shieldStrength == 0)
+            {
+                _isShieldActive = false;
+                _shieldVisual.SetActive(false);
+                return;
+            }
             return;
         }
          
@@ -197,6 +219,8 @@ public class Player : MonoBehaviour
         _isShieldActive = true;
         _audioSource.PlayOneShot(_powerUpPickup);
         _shieldVisual.SetActive(true);
+        _shieldStrength = 3;
+        _uiManager.ShieldLife(_shieldStrength);
     }
 
     //method to add 10 to the score
@@ -205,5 +229,10 @@ public class Player : MonoBehaviour
     {
         _score += points;
         _uiManager.UpdateScore(_score);
+    }
+
+    void Thruster()
+    {
+        _speed = _thrusterSpeed;
     }
 }   

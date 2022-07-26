@@ -16,8 +16,11 @@ public class UIManager : MonoBehaviour
     [SerializeField]
     private Sprite[] _livesSprites;
     [SerializeField]
+    private GameObject[] _shieldSprites;
+    [SerializeField]
     private float _flickerTime = 0.5f;
     private GameManager _gameManager;
+   
 
     // Start is called before the first frame update
     void Start()
@@ -58,5 +61,11 @@ public class UIManager : MonoBehaviour
             _gameOverText.gameObject.SetActive(false);
             yield return new WaitForSeconds(_flickerTime);
         }
+    }
+
+    public void ShieldLife(int _shieldHealth) // 3 Shield points, 2 shield points, 1 shield point, 0-default no shields
+    {
+        _shieldSprites[_shieldHealth].gameObject.SetActive(true);
+        _shieldSprites[_shieldHealth + 1].gameObject.SetActive(false);
     }
 }
