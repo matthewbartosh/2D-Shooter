@@ -9,6 +9,7 @@ public class Player : MonoBehaviour
     [SerializeField]
     private float _thrusterSpeed = 9f;
     private float _defaultSpeed;
+    //Base Laser and Ammo
     [SerializeField]
     private GameObject _laserPrefab;
     [SerializeField]
@@ -17,8 +18,25 @@ public class Player : MonoBehaviour
     private float _fireRate = 0.2f;
     private float _canFire = -1f;
     [SerializeField]
+    private int _maxAmmo = 15;
+    [SerializeField]
+    private int _currentAmmo = 15;
+    [SerializeField]
+    private AudioClip _outOfAmmo;
+    //Health and Powerups
+    [SerializeField]
     private int _lives = 3;
-    private SpawnManager _spawnManager;
+    [SerializeField]
+    private GameObject _damageR;
+    [SerializeField]
+    private GameObject _damageL;
+    [SerializeField]
+    private AudioClip _damageFeedback;
+    [SerializeField]
+    private AudioClip _laserShot;
+    [SerializeField]
+    private AudioClip _powerUpPickup;
+    [SerializeField]
     //Triple Shot
     private bool _isTripleShotActive = false;
     [SerializeField]
@@ -35,18 +53,12 @@ public class Player : MonoBehaviour
     private GameObject _shieldVisual;
     [SerializeField]
     private int _shieldStrength;
+    [SerializeField]
+    private AudioClip _shieldHit;
     //score and UI
     private int _score;
     private UIManager _uiManager;
-    [SerializeField]
-    private GameObject _damageR;
-    [SerializeField]
-    private GameObject _damageL;
-    [SerializeField]
-    private AudioClip _laserShot;
-    [SerializeField]
-    private AudioClip _powerUpPickup;
-    [SerializeField]
+    private SpawnManager _spawnManager;
     private AudioClip _explosionSound;
     private AudioSource _audioSource;
 
@@ -86,16 +98,23 @@ public class Player : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Space) && Time.time > _canFire)
         {
-            FireLaser();
+            if (_currentAmmo > 0 || _isTripleShotActive == true)
+            {
+                FireLaser();
+            }
+            else
+            {
+                _audioSource.PlayOneShot(_outOfAmmo, .35f);
+            }
         }
-     }
+    }
 
     // CalculateMovement handles Player movement
     void CalculateMovement()
     {
         float HorizontalInput = Input.GetAxis("Horizontal");
         float VerticalInput = Input.GetAxis("Vertical");
-        
+
         Vector3 direction = new Vector3(HorizontalInput, VerticalInput, 0);
 
         if (_isSpeedBoostActive == true)
@@ -133,15 +152,15 @@ public class Player : MonoBehaviour
     {
         _canFire = Time.time + _fireRate;
 
-        if ( _isTripleShotActive == true)
+        if (_isTripleShotActive == true)
         {
             Instantiate(_tripleShotPrefab, transform.position, Quaternion.identity);
-            
         }
         else
         {
             Instantiate(_laserPrefab, transform.position + new Vector3(0, 1.005f, 0), Quaternion.identity);
-            
+            _currentAmmo--;
+            _uiManager.UpdateAmmo(_currentAmmo);
         }
 
         _audioSource.PlayOneShot(_laserShot, .45f);
@@ -152,7 +171,9 @@ public class Player : MonoBehaviour
     {
         if (_isShieldActive == true)
         {
-            if (_shieldStrength < 0) _shieldStrength--;
+            if (_shieldStrength > 0) _shieldStrength--;
+
+            _audioSource.PlayOneShot(_shieldHit, .85f);
 
             _uiManager.ShieldLife(_shieldStrength);
 
@@ -164,8 +185,10 @@ public class Player : MonoBehaviour
             }
             return;
         }
-         
+
         _lives -= 1;
+
+        _audioSource.PlayOneShot(_damageFeedback, .85f);
 
         _uiManager.UpdateLives(_lives);
 
@@ -183,6 +206,11 @@ public class Player : MonoBehaviour
             _uiManager.GameOverUI();
             Destroy(this.gameObject);
         }
+    }
+
+    void Thruster()
+    {
+        _speed = _thrusterSpeed;
     }
 
     // TripleShotActive handles enabling and disabling the TripleShot powerup
@@ -211,7 +239,7 @@ public class Player : MonoBehaviour
     {
         yield return new WaitForSeconds(_speedBoostActivationTime);
         _isSpeedBoostActive = false;
-    }    
+    }
 
     // ShieldActive handles enabling and disabling the Shield powerup
     public void ShieldActive()
@@ -231,8 +259,9 @@ public class Player : MonoBehaviour
         _uiManager.UpdateScore(_score);
     }
 
-    void Thruster()
+    public void AmmoRefill()
     {
-        _speed = _thrusterSpeed;
+        _currentAmmo = 15;
+        _uiManager.UpdateAmmo(_currentAmmo);
     }
 }   

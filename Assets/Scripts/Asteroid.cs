@@ -36,6 +36,7 @@ public class Asteroid : MonoBehaviour
       if (other.CompareTag("Laser"))
         {
             Destroy(other.gameObject);
+            Destroy(this.GetComponent<CircleCollider2D>());
             StartCoroutine(Explosion());
         }
     }

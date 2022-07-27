@@ -6,7 +6,7 @@ public class PowerUp : MonoBehaviour
 {
     [SerializeField]
     private float _speed = 3.0f;
-    [SerializeField] //0 = Triple Shot, 1 = Speed, 2 = Shields
+    [SerializeField] //0 = Triple Shot, 1 = Speed, 2 = Shields, 3 = Ammo
     private int _powerupID;
 
     // Update is called once per frame
@@ -39,6 +39,9 @@ public class PowerUp : MonoBehaviour
                         break;
                     case 2:
                         player.ShieldActive();
+                        break;
+                    case 3:
+                        player.AmmoRefill();
                         break;
                     default:
                         Debug.Log("Powerup Error");

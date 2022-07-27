@@ -1,0 +1,3 @@
+GameDevHQ for assets and training
+www.soundjay.com for Out of Ammo sound
+freesound.org for the Hit Warning (m_cel) and Shield Hit (JustInvoke) sounds
