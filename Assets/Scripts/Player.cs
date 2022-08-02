@@ -15,10 +15,11 @@ public class Player : MonoBehaviour
     [SerializeField]
     private GameObject _tripleShotPrefab;
     [SerializeField]
-    private float _fireRate = 0.2f;
-    private float _canFire = -1f;
+    private GameObject _homingMissilePrefab;
     [SerializeField]
-    private int _maxAmmo = 15;
+    private float _fireRate = 0.2f;
+    private float _defaultFireRate;
+    private float _canFire = -1f;
     [SerializeField]
     private int _currentAmmo = 15;
     [SerializeField]
@@ -41,6 +42,13 @@ public class Player : MonoBehaviour
     private bool _isTripleShotActive = false;
     [SerializeField]
     private float _tripleShotActivationTime = 5.0f;
+    //Homing Missiles
+    [SerializeField]
+    private bool _isHomingMissileActive = false;
+    [SerializeField]
+    private float _homingMissileActivationTime = 5.0f;
+    [SerializeField]
+    private float _homingMissileFireRate = 1f;
     //Speed Boost
     private bool _isSpeedBoostActive = false;
     [SerializeField]
@@ -59,7 +67,6 @@ public class Player : MonoBehaviour
     private int _score;
     private UIManager _uiManager;
     private SpawnManager _spawnManager;
-    private AudioClip _explosionSound;
     private AudioSource _audioSource;
 
     // Start is called before the first frame update
@@ -89,6 +96,7 @@ public class Player : MonoBehaviour
         _damageR.SetActive(false);
 
         _defaultSpeed = _speed;
+        _defaultFireRate = _fireRate;
     }
 
     // Update is called once per frame
@@ -98,7 +106,7 @@ public class Player : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Space) && Time.time > _canFire)
         {
-            if (_currentAmmo > 0 || _isTripleShotActive == true)
+            if (_currentAmmo > 0 || _isTripleShotActive == true || _isHomingMissileActive == true)
             {
                 FireLaser();
             }
@@ -155,13 +163,19 @@ public class Player : MonoBehaviour
         if (_isTripleShotActive == true)
         {
             Instantiate(_tripleShotPrefab, transform.position, Quaternion.identity);
+            return;
         }
-        else
+        
+        if (_isHomingMissileActive == true)
         {
-            Instantiate(_laserPrefab, transform.position + new Vector3(0, 1.005f, 0), Quaternion.identity);
-            _currentAmmo--;
-            _uiManager.UpdateAmmo(_currentAmmo);
+            Instantiate(_homingMissilePrefab, transform.position, Quaternion.identity);
+            return;
         }
+
+        Instantiate(_laserPrefab, transform.position + new Vector3(0, 1.005f, 0), Quaternion.identity);
+        _currentAmmo--;
+        _uiManager.UpdateAmmo(_currentAmmo);
+        
 
         _audioSource.PlayOneShot(_laserShot, .45f);
     }
@@ -186,9 +200,9 @@ public class Player : MonoBehaviour
             return;
         }
 
-        _lives -= 1;
-
         _audioSource.PlayOneShot(_damageFeedback, .85f);
+
+        _lives -= 1;
 
         _uiManager.UpdateLives(_lives);
 
@@ -211,6 +225,14 @@ public class Player : MonoBehaviour
     void Thruster()
     {
         _speed = _thrusterSpeed;
+    }
+
+    //method to add 10 to the score
+    //communicate with the UI to update the score
+    public void AddScore(int points)
+    {
+        _score += points;
+        _uiManager.UpdateScore(_score);
     }
 
     // TripleShotActive handles enabling and disabling the TripleShot powerup
@@ -251,17 +273,46 @@ public class Player : MonoBehaviour
         _uiManager.ShieldLife(_shieldStrength);
     }
 
-    //method to add 10 to the score
-    //communicate with the UI to update the score
-    public void AddScore(int points)
-    {
-        _score += points;
-        _uiManager.UpdateScore(_score);
-    }
-
+    // AmmoRefill handles the ammo upgrade refilling ammo count
     public void AmmoRefill()
     {
         _currentAmmo = 15;
         _uiManager.UpdateAmmo(_currentAmmo);
     }
-}   
+
+    // HealPowerup handles healing the player when the Heal is picked up
+    public void HealPowerup()
+    {
+        _lives++;
+
+        if (_lives == 3)
+        {
+            _damageL.SetActive(false);
+        }
+        else if (_lives == 2)
+        {
+            _damageR.SetActive(false);
+        }
+        else if (_lives == 4)
+        {
+            _lives = 3;
+        }
+
+        _uiManager.UpdateLives(_lives);
+    }
+
+    public void HomingMissiles()
+    {
+        _isHomingMissileActive = true;
+        _audioSource.PlayOneShot(_powerUpPickup);
+        _fireRate = _homingMissileFireRate;
+        StartCoroutine(HomingMissilePowerDown());
+    }
+
+    IEnumerator HomingMissilePowerDown()
+    {
+        yield return new WaitForSeconds(_homingMissileActivationTime);
+        _fireRate = _defaultFireRate;
+        _isHomingMissileActive = false;
+    }
+}

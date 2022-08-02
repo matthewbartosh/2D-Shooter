@@ -9,6 +9,8 @@ TagManager:
   - Powerup
   - UI
   - EnemyLaser
+  - Missile
+  - Destroyed
   layers:
   - Default
   - TransparentFX

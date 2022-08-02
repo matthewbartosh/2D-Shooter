@@ -7,8 +7,11 @@ public class Enemy : MonoBehaviour
     [SerializeField]
     private float _speed = 4.0f;
     private Player _player;
+    private HomingMissile _playerMissile;
     private Animator _anim;
     private BoxCollider2D _bc;
+    [SerializeField]
+    private GameObject _destroyedEnemy;
     [SerializeField]
     private GameObject _enemyLaser;
     private AudioSource _audioSource;
@@ -80,7 +83,9 @@ public class Enemy : MonoBehaviour
             {
                 _player.Damage();
             }
-            StartCoroutine(DeathAnim());
+            Instantiate(_destroyedEnemy, transform.position, Quaternion.identity);
+            Destroy(this.gameObject);
+            //StartCoroutine(DeathAnim());
         }
         else if (other.CompareTag("Laser"))
         {
@@ -90,12 +95,34 @@ public class Enemy : MonoBehaviour
             {
                 _player.AddScore(10);
             }
-            StartCoroutine(DeathAnim());
+            Instantiate(_destroyedEnemy, transform.position, Quaternion.identity);
+            Destroy(this.gameObject);
+            //StartCoroutine(DeathAnim());
+        }
+        else if (other.CompareTag("Missile"))
+        {
+            HomingMissile _homingMissile = other.GetComponent<HomingMissile>();
+
+            if (_homingMissile != null)
+            {
+                _homingMissile.EnemyHit();
+            }
+            
+            if (_player != null)
+            {
+                _player.AddScore(10);
+            }
+            Instantiate(_destroyedEnemy, transform.position, Quaternion.identity);
+            Destroy(this.gameObject);
+            //StartCoroutine(DeathAnim());
         }
     }
 
+    /*
     IEnumerator DeathAnim()
     {
+        
+        transform.tag = "Destroyed";
         _anim.SetTrigger("OnEnemyDeath");
         _canFire = Time.time + 10f;
         _bc.enabled = false;
@@ -111,8 +138,8 @@ public class Enemy : MonoBehaviour
             yield return new WaitUntil(() => transform.position.y <= -10.5f);
             Destroy(this.gameObject);
         }
-        
-    } 
+      } 
+    */
    
     void FireLaser()
     {
@@ -128,5 +155,4 @@ public class Enemy : MonoBehaviour
 
         _audioSource.PlayOneShot(_laserShot, .35f);
     }
-   
 }

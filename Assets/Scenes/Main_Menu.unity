@@ -272,7 +272,10 @@ MonoBehaviour:
 
     Space to shoot
 
-    ESC to exit'
+    Left shift to boost
+
+    ESC to
+    exit'
 --- !u!222 &535725763
 CanvasRenderer:
   m_ObjectHideFlags: 0
