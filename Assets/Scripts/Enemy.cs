@@ -4,10 +4,8 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
-    [SerializeField]
-    private float _speed = 4.0f;
+    //Common to all
     private Player _player;
-    private HomingMissile _playerMissile;
     private Animator _anim;
     private BoxCollider2D _bc;
     [SerializeField]
@@ -16,10 +14,37 @@ public class Enemy : MonoBehaviour
     private GameObject _enemyLaser;
     private AudioSource _audioSource;
     [SerializeField]
-    private AudioClip _explosionSound;
-    private float _canFire;
+    private AudioClip _explosionSound;    
     [SerializeField]
     private AudioClip _laserShot;
+    [SerializeField] // enemy types. 0 = basic enemy, 1 = zigzag + ram, 2 = double-shot + backfiring, 3 = pro enemy (destroys pickups, avoids shots, laser weapon)
+    private int _enemyID;
+
+    //Basic Enemy
+    [SerializeField]
+    private bool _basicEnemy = false;
+    [SerializeField]
+    private float _basicSpeed = 4.0f;
+    private float _canFire;
+
+    //Zigzag+Ram Enemy, Shield
+    [SerializeField]
+    private bool _zigZagEnemy = false;
+    [SerializeField]
+    private float _zigZagAmount = 5;
+
+    //Double-shot+Backfiring Enemy ('Smart')
+    private bool _doubleShotEnemy = false;
+
+    //Pro Enemy (Destroy Pickups, avoid fire, backfire), Shield
+    private bool _proEnemy = false;
+
+    //Boss Enemy (Only One, WIP)
+    private bool _bossEnemy = false;
+
+    //God Enemy (Everything all at once)
+    private bool _godEnemy = false;
+
 
     void Start()
     {
@@ -55,21 +80,45 @@ public class Enemy : MonoBehaviour
         }
         
         _canFire = Time.time + Random.Range(2f, 7f);
+
+        switch (_enemyID)
+        {
+            case 0:
+                _basicEnemy = true;
+                break;
+            case 1:
+                _zigZagEnemy = true;
+                break;
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
-        transform.Translate(new Vector3(0, -1, 0) * _speed * Time.deltaTime);
-
-        if (transform.position.y < -11f)
+        if (_basicEnemy == true)
         {
-            transform.position = new Vector3(Random.Range(-14.55f, 14.55f), 10.8f, 0);
+            transform.Translate(new Vector3(0, -1, 0) * _basicSpeed * Time.deltaTime);
+
+            if (transform.position.y < -11f)
+            {
+                transform.position = new Vector3(Random.Range(-14.55f, 14.55f), 10.8f, 0);
+            }
+
+            if (Time.time > _canFire)
+            {
+                FireLaser();
+            }
         }
-
-        if (Time.time > _canFire)
+        else if (_zigZagEnemy == true)
         {
-            FireLaser();
+            transform.Translate(new Vector3(Mathf.Cos(Time.time * _zigZagAmount) * 2, -1, 0) * _basicSpeed * Time.deltaTime);
+
+            if (transform.position.y < -11f)
+            {
+                transform.position = new Vector3(Random.Range(-14.55f, 14.55f), 10.8f, 0);
+            }
+
+            //Ram Player Here
         }
     }
 

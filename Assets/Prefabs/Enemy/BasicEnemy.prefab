@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 2877338869455794295}
   - component: {fileID: -2873694683600260996}
   m_Layer: 0
-  m_Name: Enemy
+  m_Name: BasicEnemy
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -48,11 +48,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 039d2024e310a8e40a452ea735c5520d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _speed: 4
   _destroyedEnemy: {fileID: 2164936324877581632, guid: a5344cc8670ba624f97e2c76db824c0b, type: 3}
   _enemyLaser: {fileID: 6722154159841873346, guid: 03eceafb4aef68041ae376899d53df03, type: 3}
   _explosionSound: {fileID: 8300000, guid: a885c043fab7e46438bba03ba9dab6bc, type: 3}
   _laserShot: {fileID: 8300000, guid: 75676f361bdfeaf41a46623e95df3dbc, type: 3}
+  _enemyID: 0
+  _basicSpeed: 4
+  _zigZagAmount: 5
 --- !u!212 &9025994433621541129
 SpriteRenderer:
   m_ObjectHideFlags: 0

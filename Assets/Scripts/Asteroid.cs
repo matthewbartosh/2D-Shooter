@@ -9,27 +9,29 @@ public class Asteroid : MonoBehaviour
     [SerializeField]
     private GameObject _explosionPrefab;
     private SpawnManager _spawnManager;
+    private UIManager _uiManager;
 
     private void Start()
     {
         _spawnManager = GameObject.Find("Spawn_Manager").GetComponent<SpawnManager>();
+        _uiManager = GameObject.Find("Canvas").GetComponent<UIManager>();
 
         if (_spawnManager == null)
         {
             Debug.LogError("Spawn Manager is NULL.");
+        }
+
+        if (_uiManager == null)
+        {
+            Debug.LogError("The UI Manager is NULL.");
         }
     }
 
     // Update is called once per frame
     void Update()
     {
-        //rotate object on Z axis.
         transform.Rotate(new Vector3(0, 0, 1) * _rotateSpeed * Time.deltaTime);
     }
-
-    //check for laser collision trigger
-    //instantiate explosion on me (asteroid)
-    //destroy explosion after 3 seconds
 
     private void OnTriggerEnter2D(Collider2D other)
     {
@@ -44,6 +46,7 @@ public class Asteroid : MonoBehaviour
     IEnumerator Explosion()
     {
         var AsteroidExplosion = Instantiate(_explosionPrefab, transform.position, Quaternion.Euler(0, 0, 0));
+        _uiManager.UpdateWave(1);
         yield return new WaitForSeconds(1f);
         this.gameObject.SetActive(false);
         Destroy(AsteroidExplosion, 1.4f);

@@ -1,14 +1,22 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Player : MonoBehaviour
 {
+    //Movement and Thruster
     [SerializeField]
     private float _speed = 5f;
     [SerializeField]
     private float _thrusterSpeed = 9f;
     private float _defaultSpeed;
+    [SerializeField]
+    private Image _thrustFuel;
+    [SerializeField]
+    private float _thrustFuelBar, _maxThrustFuelBar;
+    [SerializeField]
+    private float _thrusterRefillTime = 3f;
     //Base Laser and Ammo
     [SerializeField]
     private GameObject _laserPrefab;
@@ -68,6 +76,8 @@ public class Player : MonoBehaviour
     private UIManager _uiManager;
     private SpawnManager _spawnManager;
     private AudioSource _audioSource;
+    [SerializeField]
+    private GameObject _camera;
 
     // Start is called before the first frame update
     void Start()
@@ -76,13 +86,14 @@ public class Player : MonoBehaviour
         _spawnManager = GameObject.Find("Spawn_Manager").GetComponent<SpawnManager>();
         _uiManager = GameObject.Find("Canvas").GetComponent<UIManager>();
         _audioSource = GetComponent<AudioSource>();
+        _camera = GameObject.Find("Main Camera");
 
         if (_spawnManager == null)
         {
             Debug.LogError("The Spawn Manager is NULL.");
         }
 
-        if (_uiManager == null)
+        if (_uiManager == null) 
         {
             Debug.LogError("The UI Manager is NULL.");
         }
@@ -90,6 +101,11 @@ public class Player : MonoBehaviour
         if (_audioSource == null)
         {
             Debug.LogError("The Audio Source on Player is NULL.");
+        }
+
+        if (_camera == null)
+        {
+            Debug.LogError("The Camera is NULL");
         }
 
         _damageL.SetActive(false);
@@ -145,13 +161,19 @@ public class Player : MonoBehaviour
             transform.position = new Vector3(16.15f, transform.position.y, 0);
         }
 
-        if (Input.GetKey(KeyCode.LeftShift))
+        if (Input.GetKey(KeyCode.LeftShift) && _thrustFuel.fillAmount > 0 && _isSpeedBoostActive == false)
         {
             Thruster();
+        }
+        else if (Input.GetKey(KeyCode.LeftShift) && _thrustFuel.fillAmount == 0 && _isSpeedBoostActive == false)
+        {
+            _thrustFuel.fillAmount = 0;
+            _speed = _defaultSpeed;
         }
         else
         {
             _speed = _defaultSpeed;
+            _thrustFuel.fillAmount += 1f / _thrusterRefillTime * Time.deltaTime;
         }
     }
 
@@ -204,6 +226,8 @@ public class Player : MonoBehaviour
 
         _lives -= 1;
 
+        _camera.gameObject.SendMessage("ShakeCamera");
+
         _uiManager.UpdateLives(_lives);
 
         if (_lives == 2)
@@ -225,7 +249,10 @@ public class Player : MonoBehaviour
     void Thruster()
     {
         _speed = _thrusterSpeed;
+        _thrustFuel.fillAmount -= 1f / _thrusterRefillTime * Time.deltaTime;
+
     }
+
 
     //method to add 10 to the score
     //communicate with the UI to update the score

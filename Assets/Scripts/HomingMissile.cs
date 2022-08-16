@@ -60,11 +60,11 @@ public class HomingMissile : MonoBehaviour
         {
             _targetFound = true;
             
-            foreach (Enemy enemy in _enemyList)
+            foreach (Enemy enemy in _enemyList) //for each enemy in list
             {
-                float _distance = (enemy.transform.position - transform.position).sqrMagnitude;
+                float _distance = (enemy.transform.position - transform.position).sqrMagnitude; //find how far away the enemy is from the player
 
-                if (_distance < _closestEnemy)
+                if (_distance < _closestEnemy) //compare to the current closest enemy and set _distance to _closestEnemy
                 {
                     _closestEnemy = _distance;
                     _enemyTarget = enemy;
