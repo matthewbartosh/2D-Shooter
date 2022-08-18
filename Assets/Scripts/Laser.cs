@@ -7,6 +7,7 @@ public class Laser : MonoBehaviour
     [SerializeField]
     private float _speed = 10;
     private bool _isEnemyLaser = false;
+    private bool _isBackwardsEnemy = false;
 
     // Update is called once per frame
     void Update()
@@ -17,7 +18,14 @@ public class Laser : MonoBehaviour
         }
         else
         {
-            MoveDown();
+            if (_isBackwardsEnemy == true)
+            {
+                MoveUp();
+            }
+            else
+            {
+                 MoveDown();
+            }
         }
     }
 
@@ -49,6 +57,11 @@ public class Laser : MonoBehaviour
     public void AssignEnemyLaser()
     {
         _isEnemyLaser = true;
+    }
+
+    public void AssignBackwardsLaser()
+    {
+        _isBackwardsEnemy = true;
     }
 
     private void OnTriggerEnter2D(Collider2D other)

@@ -53,7 +53,9 @@ MonoBehaviour:
   _explosionSound: {fileID: 8300000, guid: a885c043fab7e46438bba03ba9dab6bc, type: 3}
   _laserShot: {fileID: 8300000, guid: 75676f361bdfeaf41a46623e95df3dbc, type: 3}
   _enemyID: 0
+  _basicEnemy: 1
   _basicSpeed: 4
+  _zigZagEnemy: 0
   _zigZagAmount: 5
 --- !u!212 &9025994433621541129
 SpriteRenderer:

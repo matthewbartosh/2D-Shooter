@@ -8,11 +8,31 @@ public class PowerUp : MonoBehaviour
     private float _speed = 3.0f;
     [SerializeField] //0 = Triple Shot, 1 = Speed, 2 = Shields, 3 = Ammo, 4 = heal
     private int _powerupID;
+    private Player _player;
+    private bool _collecting = false;
+
+    private void Start()
+    {
+        _player = GameObject.Find("Player").GetComponent<Player>();
+        if (_player == null)
+        {
+            Debug.LogError("Player is NULL.");
+        }
+    }
 
     // Update is called once per frame
     void Update()
     {
-        transform.Translate(new Vector3(0, -1, 0) * _speed * Time.deltaTime);
+        if (_collecting == false)
+        {
+            transform.Translate(new Vector3(0, -1, 0) * _speed * Time.deltaTime);
+        }
+        else if (_collecting == true)
+        {
+            Vector3 direction = transform.position - _player.transform.position;
+            direction = -direction.normalized;
+            transform.position += direction * _speed * Time.deltaTime;
+        }
 
         if(transform.position.y < -9.0f)
         {
@@ -49,6 +69,9 @@ public class PowerUp : MonoBehaviour
                     case 5:
                         player.HomingMissiles();
                         break;
+                    case 6:
+                        player.SpeedDebuff();
+                        break;
                     default:
                         Debug.Log("Powerup Error");
                         break;
@@ -57,5 +80,11 @@ public class PowerUp : MonoBehaviour
 
             Destroy(this.gameObject);
         }
+    }
+
+    public void CollectButton()
+    {
+        _collecting = true;
+        _speed *= 2;
     }
 }

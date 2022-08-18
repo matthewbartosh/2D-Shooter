@@ -17,8 +17,10 @@ public class Enemy : MonoBehaviour
     private AudioClip _explosionSound;    
     [SerializeField]
     private AudioClip _laserShot;
-    [SerializeField] // enemy types. 0 = basic enemy, 1 = zigzag + ram, 2 = double-shot + backfiring, 3 = pro enemy (destroys pickups, avoids shots, laser weapon)
+    [SerializeField] // enemy types. 0 = basic enemy, 1 = zigzag + ram, 2 = double-shot + backfiring, 3 = pro enemy (destroys pickups, avoids shots)
     private int _enemyID;
+    [SerializeField]
+    private float _speed = 4.0f;
 
     //Basic Enemy
     [SerializeField]
@@ -32,9 +34,22 @@ public class Enemy : MonoBehaviour
     private bool _zigZagEnemy = false;
     [SerializeField]
     private float _zigZagAmount = 5;
+    [SerializeField]
+    private bool _enemyShield = false;
+    [SerializeField]
+    private GameObject _shieldVisual;
+    [SerializeField]
+    private float _distance;
+    [SerializeField]
+    private float _rammingSpeed = 8.0f;
 
     //Double-shot+Backfiring Enemy ('Smart')
+    [SerializeField]
     private bool _doubleShotEnemy = false;
+    [SerializeField]
+    private GameObject _enemyDoubleLaser;
+
+
 
     //Pro Enemy (Destroy Pickups, avoid fire, backfire), Shield
     private bool _proEnemy = false;
@@ -48,9 +63,9 @@ public class Enemy : MonoBehaviour
 
     void Start()
     {
-        _player = GameObject.Find("Player").GetComponent<Player>();
         _audioSource = GetComponent<AudioSource>();
-
+        
+        _player = GameObject.Find("Player").GetComponent<Player>();
         if (_player == null)
         {
             Debug.LogError("Player is NULL.");
@@ -88,6 +103,10 @@ public class Enemy : MonoBehaviour
                 break;
             case 1:
                 _zigZagEnemy = true;
+                _enemyShield = true;
+                break;
+            case 2:
+                _doubleShotEnemy = true;
                 break;
         }
     }
@@ -95,14 +114,11 @@ public class Enemy : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        transform.position = new Vector3(Mathf.Clamp(transform.position.x, -14.6f, 14.6f), transform.position.y, 0);
+
         if (_basicEnemy == true)
         {
             transform.Translate(new Vector3(0, -1, 0) * _basicSpeed * Time.deltaTime);
-
-            if (transform.position.y < -11f)
-            {
-                transform.position = new Vector3(Random.Range(-14.55f, 14.55f), 10.8f, 0);
-            }
 
             if (Time.time > _canFire)
             {
@@ -111,14 +127,37 @@ public class Enemy : MonoBehaviour
         }
         else if (_zigZagEnemy == true)
         {
-            transform.Translate(new Vector3(Mathf.Cos(Time.time * _zigZagAmount) * 2, -1, 0) * _basicSpeed * Time.deltaTime);
-
-            if (transform.position.y < -11f)
+            if (_player != null)
             {
-                transform.position = new Vector3(Random.Range(-14.55f, 14.55f), 10.8f, 0);
-            }
+                _distance = Vector3.Distance(_player.transform.position, transform.position);
 
-            //Ram Player Here
+                if (_distance < 4 && transform.position.y > _player.transform.position.y)
+                {
+                    Ram();
+                }
+                else
+                {
+                    transform.Translate(new Vector3(Mathf.Cos(Time.time * _zigZagAmount) * 2, -1, 0) * _basicSpeed * Time.deltaTime);
+                }
+            }
+            else
+            {
+                transform.Translate(new Vector3(Mathf.Cos(Time.time * _zigZagAmount) * 2, -1, 0) * _basicSpeed * Time.deltaTime);
+            }
+        }
+        else if (_doubleShotEnemy == true)
+        {
+            transform.Translate(new Vector3(0, -1, 0) * _basicSpeed * Time.deltaTime);
+
+            if (Time.time > _canFire)
+            {
+                FireDoubleLaser();
+            }
+        }
+
+        if (transform.position.y < -11f)
+        {
+            transform.position = new Vector3(Random.Range(-14.55f, 14.55f), 10.8f, 0);
         }
     }
 
@@ -132,8 +171,18 @@ public class Enemy : MonoBehaviour
             {
                 _player.Damage();
             }
-            Instantiate(_destroyedEnemy, transform.position, Quaternion.identity);
-            Destroy(this.gameObject);
+
+            if (_enemyShield == true)
+            {
+                _enemyShield = false;
+                _shieldVisual.SetActive(false);
+                ShieldHit();
+            }
+            else if (_enemyShield == false)
+            {
+                Instantiate(_destroyedEnemy, transform.position, Quaternion.identity);
+                Destroy(this.gameObject);
+            }
             //StartCoroutine(DeathAnim());
         }
         else if (other.CompareTag("Laser"))
@@ -144,8 +193,17 @@ public class Enemy : MonoBehaviour
             {
                 _player.AddScore(10);
             }
-            Instantiate(_destroyedEnemy, transform.position, Quaternion.identity);
-            Destroy(this.gameObject);
+            
+            if (_enemyShield == true)
+            {
+                _enemyShield = false;
+                _shieldVisual.SetActive(false);
+            }
+            else if (_enemyShield == false)
+            {
+                Instantiate(_destroyedEnemy, transform.position, Quaternion.identity);
+                Destroy(this.gameObject);
+            }
             //StartCoroutine(DeathAnim());
         }
         else if (other.CompareTag("Missile"))
@@ -156,13 +214,22 @@ public class Enemy : MonoBehaviour
             {
                 _homingMissile.EnemyHit();
             }
-            
+         
             if (_player != null)
             {
                 _player.AddScore(10);
             }
-            Instantiate(_destroyedEnemy, transform.position, Quaternion.identity);
-            Destroy(this.gameObject);
+           
+            if (_enemyShield == true)
+            {
+                _enemyShield = false;
+                _shieldVisual.SetActive(false);
+            }
+            else if (_enemyShield == false)
+            {
+                Instantiate(_destroyedEnemy, transform.position, Quaternion.identity);
+                Destroy(this.gameObject);
+            }
             //StartCoroutine(DeathAnim());
         }
     }
@@ -203,5 +270,56 @@ public class Enemy : MonoBehaviour
         }
 
         _audioSource.PlayOneShot(_laserShot, .35f);
+    }
+
+    void FireDoubleLaser()
+    {
+        _canFire = Time.time + Random.Range(1f, 3f);
+
+        GameObject enemyLaser = Instantiate(_enemyDoubleLaser, transform.position, Quaternion.identity);
+        Laser[] lasers = enemyLaser.GetComponentsInChildren<Laser>();
+
+        if (_player != null)
+        {
+            if (transform.position.y > _player.transform.position.y)
+            {
+
+                for (int i = 0; i < lasers.Length; i++)
+                {
+                    lasers[i].AssignEnemyLaser();
+                }
+            }
+            else
+            {
+                for (int i = 0; i < lasers.Length; i++)
+                {
+                    lasers[i].AssignEnemyLaser();
+                    lasers[i].AssignBackwardsLaser();
+                }
+            }
+        }
+        else
+        {
+            for (int i = 0; i < lasers.Length; i++)
+            {
+                lasers[i].AssignEnemyLaser();
+            }
+        }
+         
+        _audioSource.PlayOneShot(_laserShot, .35f);
+    }
+
+    IEnumerator ShieldHit()
+    {
+        _bc.enabled = false;
+        yield return new WaitForSeconds(1);
+        _bc.enabled = true;
+    }
+
+    void Ram()
+    {
+        Vector3 direction = transform.position - _player.transform.position;
+        direction = -direction.normalized;
+        transform.position += direction * _rammingSpeed * Time.deltaTime;
     }
 }

@@ -280,7 +280,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 310711709}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!95 &51043443
 Animator:
@@ -491,7 +491,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 7
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &164136225
 GameObject:
@@ -584,7 +584,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: -44.07, y: -174.321, z: 306.121}
 --- !u!1 &256684182
 GameObject:
@@ -717,7 +717,7 @@ RectTransform:
   - {fileID: 1195542182}
   - {fileID: 1480233408}
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -774,13 +774,15 @@ MonoBehaviour:
   _damageFeedback: {fileID: 8300000, guid: 23541a6da83af6a4eadf52a27bc6d808, type: 3}
   _laserShot: {fileID: 8300000, guid: 75676f361bdfeaf41a46623e95df3dbc, type: 3}
   _powerUpPickup: {fileID: 8300000, guid: 5ee343246919d2b4bba63ae629e95494, type: 3}
-  _isTripleShotActive: 0
+  _collectionsRemaining: 3
   _tripleShotActivationTime: 5
   _isHomingMissileActive: 0
   _homingMissileActivationTime: 7
   _homingMissileFireRate: 1
   _speedBoostSpeed: 12
   _speedBoostActivationTime: 5
+  _speedDebuffMultiplier: 2
+  _speedDebuffActivationTime: 5
   _shieldVisual: {fileID: 1844883906}
   _shieldStrength: 0
   _shieldHit: {fileID: 8300000, guid: 98a1bd62c540b704b8240d61b52b6ff6, type: 3}
@@ -844,15 +846,15 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 310711706}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: -5, z: 0}
   m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_Children:
-  - {fileID: 1844883908}
   - {fileID: 2134125043}
   - {fileID: 1549515283}
   - {fileID: 51043442}
+  - {fileID: 1844883908}
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!61 &310711710
 BoxCollider2D:
@@ -1240,7 +1242,7 @@ Transform:
   m_LocalScale: {x: 1.604173, y: 1.6083295, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &552726420
 GameObject:
@@ -1358,7 +1360,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 8
+  m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &693116862
 GameObject:
@@ -1541,7 +1543,7 @@ Transform:
   m_Children:
   - {fileID: 9700842}
   m_Father: {fileID: 0}
-  m_RootOrder: 10
+  m_RootOrder: 11
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &923715222
 PrefabInstance:
@@ -1657,10 +1659,11 @@ MonoBehaviour:
   - {fileID: 6848912465407181539, guid: 36f6c64840df85d449fd5ba9cbdecdc8, type: 3}
   - {fileID: 1430156076589556843, guid: 1d9e918f02f87bc43bad4a40fdb3b828, type: 3}
   - {fileID: 6601938577652569342, guid: 7f447c84cbc9c5444bc51b39d88643fe, type: 3}
+  - {fileID: 5331686623584764533, guid: 2f61c654a468d99469a931700adcbdee, type: 3}
   _restocking:
   - {fileID: 5963003060832632082, guid: c29096005e807e946b97d083fc86c606, type: 3}
   - {fileID: 244998944587774979, guid: f997c36c77ed68647bce66e0c17ee178, type: 3}
-  _firstWaveEnemySpawnTime: 1.5
+  _enemySpawnTime: 1.5
   _minPowerupSpawnTime: 8
   _maxPowerupSpawnTime: 13
   _minHealthAmmoSpawnTime: 4
@@ -1669,11 +1672,12 @@ MonoBehaviour:
   _powerupTimeTilSpawn: 2.9
   _ammoTimeTilSpawn: 2.1
   _healthSpawnChance: 0.15
-  _enemySpawnTime: 1.5
   _enemies:
   - {fileID: 4435626437111333080, guid: e16503139b120304584c14b0897b8e92, type: 3}
   - {fileID: 5096598070110776375, guid: d6e9b401b40a81e4eb884052f52d447f, type: 3}
+  - {fileID: 6039760535976413086, guid: fac3168e81093b04b8decf939e03ad28, type: 3}
   _waveNumber: 1
+  _waveDuration: 10
 --- !u!4 &935910141
 Transform:
   m_ObjectHideFlags: 0
@@ -1687,7 +1691,7 @@ Transform:
   m_Children:
   - {fileID: 378871152}
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1018277976
 GameObject:
@@ -2355,7 +2359,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 310711709}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!95 &1549515284
 Animator:
@@ -2463,6 +2467,67 @@ RectTransform:
   m_AnchoredPosition: {x: 400, y: -224.98}
   m_SizeDelta: {x: 800, y: 449.96}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!1001 &1707193174
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4571174598833702948, guid: fac3168e81093b04b8decf939e03ad28, type: 3}
+      propertyPath: m_RootOrder
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4571174598833702948, guid: fac3168e81093b04b8decf939e03ad28, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 7.43
+      objectReference: {fileID: 0}
+    - target: {fileID: 4571174598833702948, guid: fac3168e81093b04b8decf939e03ad28, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 13.22
+      objectReference: {fileID: 0}
+    - target: {fileID: 4571174598833702948, guid: fac3168e81093b04b8decf939e03ad28, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4571174598833702948, guid: fac3168e81093b04b8decf939e03ad28, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4571174598833702948, guid: fac3168e81093b04b8decf939e03ad28, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4571174598833702948, guid: fac3168e81093b04b8decf939e03ad28, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4571174598833702948, guid: fac3168e81093b04b8decf939e03ad28, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4571174598833702948, guid: fac3168e81093b04b8decf939e03ad28, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4571174598833702948, guid: fac3168e81093b04b8decf939e03ad28, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4571174598833702948, guid: fac3168e81093b04b8decf939e03ad28, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6039760535976413086, guid: fac3168e81093b04b8decf939e03ad28, type: 3}
+      propertyPath: m_Name
+      value: SmartEnemy
+      objectReference: {fileID: 0}
+    - target: {fileID: 8154250240786853370, guid: fac3168e81093b04b8decf939e03ad28, type: 3}
+      propertyPath: _enemyID
+      value: 3
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: fac3168e81093b04b8decf939e03ad28, type: 3}
 --- !u!1 &1792870499
 GameObject:
   m_ObjectHideFlags: 0
@@ -2509,7 +2574,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 9
+  m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1806036063
 GameObject:
@@ -2746,7 +2811,7 @@ Transform:
   m_LocalScale: {x: 2, y: 2, z: 2}
   m_Children: []
   m_Father: {fileID: 310711709}
-  m_RootOrder: 0
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!95 &1844883909
 Animator:
@@ -3031,7 +3096,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 310711709}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!95 &2134125044
 Animator:

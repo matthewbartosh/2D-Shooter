@@ -41,9 +41,6 @@ public class SpawnManager : MonoBehaviour
     [SerializeField]
     private float _waveDuration = 10;
 
-    //Enemy wave spawns, track each wave here re:how many spawns,
-    //increase difficulty of enemies in later waves, wave 10 boss wave
-
     private void Start()
     {
         _uiManager = GameObject.Find("Canvas").GetComponent<UIManager>();
@@ -88,7 +85,7 @@ public class SpawnManager : MonoBehaviour
                 newEnemy.transform.parent = _enemyContainer.transform;
                 yield return new WaitForSeconds(_enemySpawnTime);
             }
-            if (_waveNumber > 2 && _waveNumber <= 4)
+            else if (_waveNumber > 2 && _waveNumber <= 4)
             {
                 Vector3 posToSpawn = new Vector3(Random.Range(-14.55f, 14.55f), 10.8f, 0);
                 int randomEnemy = Random.Range(0, 2);
@@ -96,7 +93,7 @@ public class SpawnManager : MonoBehaviour
                 newEnemy.transform.parent = _enemyContainer.transform;
                 yield return new WaitForSeconds(_enemySpawnTime);
             }
-            /*if (_waveNumber > 4 && _waveNumber <= 6)
+            else if (_waveNumber > 4) //&& _waveNumber <= 7)
             {
                 Vector3 posToSpawn = new Vector3(Random.Range(-14.55f, 14.55f), 10.8f, 0);
                 int randomEnemy = Random.Range(0, 3);
@@ -104,7 +101,7 @@ public class SpawnManager : MonoBehaviour
                 newEnemy.transform.parent = _enemyContainer.transform;
                 yield return new WaitForSeconds(_enemySpawnTime);
             }
-            if (_waveNumber > 6 && _waveNumber <= 8)
+            /*else if (_waveNumber > 7 && _waveNumber <= 9)
             {
                 Vector3 posToSpawn = new Vector3(Random.Range(-14.55f, 14.55f), 10.8f, 0);
                 int randomEnemy = Random.Range(0, 4);
@@ -112,26 +109,26 @@ public class SpawnManager : MonoBehaviour
                 newEnemy.transform.parent = _enemyContainer.transform;
                 yield return new WaitForSeconds(_enemySpawnTime);
             }
-            if (_waveNumber > 8 && _waveNumber < 10)
-            {
-                Vector3 posToSpawn = new Vector3(Random.Range(-14.55f, 14.55f), 10.8f, 0);
-                int randomEnemy = Random.Range(0, 5);
-                GameObject newEnemy = Instantiate(_enemies[randomEnemy], posToSpawn, Quaternion.identity);
-                newEnemy.transform.parent = _enemyContainer.transform;
-                yield return new WaitForSeconds(_enemySpawnTime);
-            }
-            if (_waveNumber == 10)
+            else if (_waveNumber == 10)
             {
                 //boss wave
             }
-            if (_waveNumber > 10)
+            else if (_waveNumber > 10 && _waveNumber < 20)
             {
                 Vector3 posToSpawn = new Vector3(Random.Range(-14.55f, 14.55f), 10.8f, 0);
                 int randomEnemy = Random.Range(0, _enemies.Length);
                 GameObject newEnemy = Instantiate(_enemies[randomEnemy], posToSpawn, Quaternion.identity);
                 newEnemy.transform.parent = _enemyContainer.transform;
                 yield return new WaitForSeconds(_enemySpawnTime);
-            }*/
+            }
+            else if (_waveNumber >= 20)
+            {
+                Vector3 posToSpawn = new Vector3(Random.Range(-14.55f, 14.55f), 10.8f, 0);
+                int randomEnemy = Random.Range(0, _enemies.Length);
+                GameObject newEnemy = Instantiate(_enemies[randomEnemy], posToSpawn, Quaternion.identity);
+                newEnemy.transform.parent = _enemyContainer.transform;
+                yield return new WaitForSeconds(.1);
+            }
             else
             {
                 Vector3 posToSpawn = new Vector3(Random.Range(-14.55f, 14.55f), 10.8f, 0);
@@ -140,6 +137,7 @@ public class SpawnManager : MonoBehaviour
                 newEnemy.transform.parent = _enemyContainer.transform;
                 yield return new WaitForSeconds(_enemySpawnTime);
             }
+            */
         }
     }
 
@@ -166,14 +164,10 @@ public class SpawnManager : MonoBehaviour
             if (ammoOrHealth <= _healthSpawnChance)
             {
                 Instantiate(_restocking[1], posToSpawn, Quaternion.identity);
-                Debug.Log("Health Spawned.");
-                Debug.Log("Rolled a: " + ammoOrHealth);
             }
             else
             {
                 Instantiate(_restocking[0], posToSpawn, Quaternion.identity);
-                Debug.Log("Ammo Spawned.");
-                Debug.Log("Rolled a: " + ammoOrHealth);
             }
             yield return new WaitForSeconds(Random.Range(_minHealthAmmoSpawnTime, _maxHealthAmmoSpawnTime));
         }
@@ -200,7 +194,7 @@ public class SpawnManager : MonoBehaviour
         _uiManager.UpdateWave(_waveNumber);
         if(_enemySpawnTime > .3)
         {
-            _enemySpawnTime -= 0.3f;
+            _enemySpawnTime -= 0.2f;
         }
     }
 }

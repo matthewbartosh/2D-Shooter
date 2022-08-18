@@ -46,6 +46,7 @@ public class Player : MonoBehaviour
     [SerializeField]
     private AudioClip _powerUpPickup;
     [SerializeField]
+    private int _collectionsRemaining = 3;
     //Triple Shot
     private bool _isTripleShotActive = false;
     [SerializeField]
@@ -63,6 +64,12 @@ public class Player : MonoBehaviour
     private float _speedBoostSpeed = 14f;
     [SerializeField]
     private float _speedBoostActivationTime = 5.0f;
+    //Speed Debuff
+    private bool _isSpeedDebuffActive = false;
+    [SerializeField]
+    private float _speedDebuffMultiplier = 2f;
+    [SerializeField]
+    private float _speedDebuffActivationTime = 5.0f;
     //Shield
     private bool _isShieldActive = false;
     [SerializeField]
@@ -78,6 +85,7 @@ public class Player : MonoBehaviour
     private AudioSource _audioSource;
     [SerializeField]
     private GameObject _camera;
+    
 
     // Start is called before the first frame update
     void Start()
@@ -130,6 +138,11 @@ public class Player : MonoBehaviour
             {
                 _audioSource.PlayOneShot(_outOfAmmo, .35f);
             }
+        }
+
+        if (Input.GetKeyDown(KeyCode.C) && _collectionsRemaining > 0)
+        {
+            CollectPowerups();
         }
     }
 
@@ -341,5 +354,38 @@ public class Player : MonoBehaviour
         yield return new WaitForSeconds(_homingMissileActivationTime);
         _fireRate = _defaultFireRate;
         _isHomingMissileActive = false;
+    }
+
+    public void SpeedDebuff()
+    {
+        _isSpeedDebuffActive = true;
+        _audioSource.PlayOneShot(_powerUpPickup);
+        _defaultSpeed /= _speedDebuffMultiplier;
+        _thrusterSpeed /= _speedDebuffMultiplier;
+        StartCoroutine(SpeedDebuffPowerDown());
+    }
+
+    IEnumerator SpeedDebuffPowerDown()
+    {
+        yield return new WaitForSeconds(_speedDebuffActivationTime);
+        _defaultSpeed *= _speedDebuffMultiplier;
+        _thrusterSpeed *= _speedDebuffMultiplier;
+        _isSpeedDebuffActive = false;
+    }
+
+    void CollectPowerups()
+    {
+        GameObject[] _powerupList = GameObject.FindGameObjectsWithTag("Powerup");
+
+        if (_powerupList != null)
+        {
+            for (int i = 0; i < _powerupList.Length; i++)
+            {
+                PowerUp powerup = _powerupList[i].GetComponent<PowerUp>();
+                powerup.CollectButton();
+            }
+        }
+
+        _collectionsRemaining -= 1;
     }
 }
