@@ -31,7 +31,7 @@ public class PowerUp : MonoBehaviour
         {
             Vector3 direction = transform.position - _player.transform.position;
             direction = -direction.normalized;
-            transform.position += direction * _speed * Time.deltaTime;
+            transform.position += _speed * Time.deltaTime * direction;
         }
 
         if(transform.position.y < -9.0f)
@@ -77,7 +77,7 @@ public class PowerUp : MonoBehaviour
                         break;
                 }
             }
-
+            
             Destroy(this.gameObject);
         }
     }
@@ -85,6 +85,11 @@ public class PowerUp : MonoBehaviour
     public void CollectButton()
     {
         _collecting = true;
-        _speed *= 2;
+        _speed *= 3;
+    }
+
+    public void ProShot()
+    {
+        Destroy(this.gameObject);
     }
 }

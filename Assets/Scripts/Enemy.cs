@@ -19,8 +19,6 @@ public class Enemy : MonoBehaviour
     private AudioClip _laserShot;
     [SerializeField] // enemy types. 0 = basic enemy, 1 = zigzag + ram, 2 = double-shot + backfiring, 3 = pro enemy (destroys pickups, avoids shots)
     private int _enemyID;
-    [SerializeField]
-    private float _speed = 4.0f;
 
     //Basic Enemy
     [SerializeField]
@@ -49,10 +47,19 @@ public class Enemy : MonoBehaviour
     [SerializeField]
     private GameObject _enemyDoubleLaser;
 
-
-
     //Pro Enemy (Destroy Pickups, avoid fire, backfire), Shield
+    [SerializeField]
     private bool _proEnemy = false;
+    [SerializeField]
+    private float _proSpeed = 3.0f;
+    [SerializeField]
+    private GameObject _proLaser;
+    private float _proCanFire;
+    [SerializeField]
+    private Vector2 _rayBoxSize = new Vector2(2.5f, 5.0f);
+    [SerializeField]
+    private float _proSight = 3.5f;
+    RaycastHit _hit;
 
     //Boss Enemy (Only One, WIP)
     private bool _bossEnemy = false;
@@ -66,6 +73,7 @@ public class Enemy : MonoBehaviour
         _audioSource = GetComponent<AudioSource>();
         
         _player = GameObject.Find("Player").GetComponent<Player>();
+
         if (_player == null)
         {
             Debug.LogError("Player is NULL.");
@@ -78,7 +86,7 @@ public class Enemy : MonoBehaviour
             Debug.LogError("Animator is NULL.");
         }
 
-        _bc = GetComponent<BoxCollider2D>();
+        _bc = GetComponent<BoxCollider2D>(); 
 
         if (_bc == null)
         {
@@ -93,8 +101,8 @@ public class Enemy : MonoBehaviour
         {
             _audioSource.clip = _explosionSound;
         }
-        
-        _canFire = Time.time + Random.Range(2f, 7f);
+
+        _canFire = Time.time + Random.Range(5f, 9f);
 
         switch (_enemyID)
         {
@@ -108,6 +116,11 @@ public class Enemy : MonoBehaviour
             case 2:
                 _doubleShotEnemy = true;
                 break;
+            case 3:
+                _proEnemy = true;
+                _enemyShield = true;
+                _proCanFire = Time.time + Random.Range(2f, 5f);
+                break;
         }
     }
 
@@ -116,13 +129,17 @@ public class Enemy : MonoBehaviour
     {
         transform.position = new Vector3(Mathf.Clamp(transform.position.x, -14.6f, 14.6f), transform.position.y, 0);
 
-        if (_basicEnemy == true)
+        if (_basicEnemy == true || _doubleShotEnemy == true)
         {
-            transform.Translate(new Vector3(0, -1, 0) * _basicSpeed * Time.deltaTime);
+            transform.Translate(_basicSpeed * Time.deltaTime * new Vector3(0, -1, 0));
 
-            if (Time.time > _canFire)
+            if (Time.time > _canFire && _basicEnemy == true)
             {
                 FireLaser();
+            }
+            else if (Time.time > _canFire && _doubleShotEnemy == true)
+            {
+                FireDoubleLaser();
             }
         }
         else if (_zigZagEnemy == true)
@@ -137,30 +154,61 @@ public class Enemy : MonoBehaviour
                 }
                 else
                 {
-                    transform.Translate(new Vector3(Mathf.Cos(Time.time * _zigZagAmount) * 2, -1, 0) * _basicSpeed * Time.deltaTime);
+                    transform.Translate(_basicSpeed * Time.deltaTime * new Vector3(Mathf.Cos(Time.time * _zigZagAmount) * 2, -1, 0));
                 }
             }
             else
             {
-                transform.Translate(new Vector3(Mathf.Cos(Time.time * _zigZagAmount) * 2, -1, 0) * _basicSpeed * Time.deltaTime);
+                transform.Translate(_basicSpeed * Time.deltaTime * new Vector3(Mathf.Cos(Time.time * _zigZagAmount) * 2, -1, 0));
             }
         }
-        else if (_doubleShotEnemy == true)
+        else if (_proEnemy == true)
         {
-            transform.Translate(new Vector3(0, -1, 0) * _basicSpeed * Time.deltaTime);
+            transform.Translate(_proSpeed * Time.deltaTime * new Vector3(0, -1, 0));
 
-            if (Time.time > _canFire)
+            if (Time.time > _proCanFire)
             {
-                FireDoubleLaser();
+                FireLaser();
+            }
+
+            RaycastHit2D hit = Physics2D.BoxCast(transform.position, _rayBoxSize, 0, Vector2.down, _proSight, LayerMask.GetMask("PlayerLaser"));
+
+            if (hit.collider != null)
+            {
+                if (hit.collider.CompareTag("Laser"))
+                {
+                    Transform laser = hit.collider.GetComponent<Transform>();
+                    if( laser != null)
+                    {
+                        if (laser.position.x > transform.position.x)
+                        {
+                            transform.Translate(_proSpeed * Time.deltaTime * new Vector3(-1, -1, 0));
+                        }
+                        else if (laser.position.x < transform.position.x)
+                        {
+                            transform.Translate(_proSpeed * Time.deltaTime * new Vector3(1, -1, 0));
+                        }
+                    }
+                }
             }
         }
 
-        if (transform.position.y < -11f)
+        if (transform.position.y < -11f && _proEnemy == true)
+        {
+            transform.position = new Vector3(Random.Range(-14.55f, 14.55f), 10.8f, 0);
+            _enemyShield = true;
+            _shieldVisual.SetActive(true);
+        }
+        else if (transform.position.y < -11f)
         {
             transform.position = new Vector3(Random.Range(-14.55f, 14.55f), 10.8f, 0);
         }
     }
 
+    private void OnDrawGizmos()
+    {
+            Gizmos.DrawWireCube(new Vector2 (transform.position.x, transform.position.y - _proSight), _rayBoxSize);
+    }
 
     // OnTriggerEnter is called when this gameobject collides with another
     private void OnTriggerEnter2D(Collider2D other)
@@ -176,7 +224,7 @@ public class Enemy : MonoBehaviour
             {
                 _enemyShield = false;
                 _shieldVisual.SetActive(false);
-                ShieldHit();
+                StartCoroutine(ShieldHit());
             }
             else if (_enemyShield == false)
             {
@@ -259,14 +307,37 @@ public class Enemy : MonoBehaviour
    
     void FireLaser()
     {
-        _canFire = Time.time + Random.Range(1f, 3f);
-
         GameObject enemyLaser = Instantiate(_enemyLaser, transform.position + new Vector3(0, -.8f, 0), Quaternion.identity);
         Laser[] lasers = enemyLaser.GetComponentsInChildren<Laser>();
 
-        for (int i = 0; i < lasers.Length; i++)
+        if (_player != null && _proEnemy == true)
         {
-            lasers[i].AssignEnemyLaser();
+            _proCanFire = Time.time + Random.Range(.5f, 2f);
+
+            if (transform.position.y > _player.transform.position.y)
+            {
+                for (int i = 0; i < lasers.Length; i++)
+                {
+                    lasers[i].AssignProLaser();
+                }
+            }
+            else
+            {
+                for (int i = 0; i < lasers.Length; i++)
+                {
+                    lasers[i].AssignProLaser();
+                    lasers[i].AssignBackwardsLaser();
+                }
+            }
+        }
+        else
+        {
+            _canFire = Time.time + Random.Range(1f, 3f);
+
+            for (int i = 0; i < lasers.Length; i++)
+            {
+                lasers[i].AssignEnemyLaser();
+            }
         }
 
         _audioSource.PlayOneShot(_laserShot, .35f);
@@ -320,6 +391,6 @@ public class Enemy : MonoBehaviour
     {
         Vector3 direction = transform.position - _player.transform.position;
         direction = -direction.normalized;
-        transform.position += direction * _rammingSpeed * Time.deltaTime;
+        transform.position += _rammingSpeed * Time.deltaTime * direction;
     }
 }

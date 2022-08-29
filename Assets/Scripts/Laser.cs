@@ -8,24 +8,18 @@ public class Laser : MonoBehaviour
     private float _speed = 10;
     private bool _isEnemyLaser = false;
     private bool _isBackwardsEnemy = false;
+    private bool _isProEnemy = false;
 
     // Update is called once per frame
     void Update()
     {
-        if (_isEnemyLaser == false)
+        if (_isEnemyLaser == false || _isBackwardsEnemy == true)
         {
             MoveUp();
         }
         else
         {
-            if (_isBackwardsEnemy == true)
-            {
-                MoveUp();
-            }
-            else
-            {
-                 MoveDown();
-            }
+            MoveDown();
         }
     }
 
@@ -64,6 +58,12 @@ public class Laser : MonoBehaviour
         _isBackwardsEnemy = true;
     }
 
+    public void AssignProLaser()
+    {
+        _isProEnemy = true;
+        _isEnemyLaser = true;
+    }
+
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("Player") && _isEnemyLaser == true)
@@ -77,5 +77,16 @@ public class Laser : MonoBehaviour
                 Destroy(this.gameObject);
             }
         } 
+        else if (other.CompareTag("Powerup") && _isProEnemy == true)
+        {
+            PowerUp powerup = other.GetComponent<PowerUp>();
+
+            if (powerup != null)
+            {
+                powerup.ProShot();
+
+                Destroy(this.gameObject);
+            }
+        }
     }
 }

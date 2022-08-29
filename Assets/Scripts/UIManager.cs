@@ -53,7 +53,15 @@ public class UIManager : MonoBehaviour
 
     public void UpdateLives(int currentLives)
     {
-        _livesImg.sprite = _livesSprites[currentLives];
+        if (currentLives >= 0)
+        {
+            _livesImg.sprite = _livesSprites[currentLives];
+        }
+        else if (currentLives < 0)
+        {
+            currentLives = 0;
+            _livesImg.sprite = _livesSprites[currentLives];
+        }
     }
 
     public void UpdateWave(int currentWave)

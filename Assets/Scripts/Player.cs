@@ -58,6 +58,8 @@ public class Player : MonoBehaviour
     private float _homingMissileActivationTime = 5.0f;
     [SerializeField]
     private float _homingMissileFireRate = 1f;
+    [SerializeField]
+    private AudioClip _missileFire;
     //Speed Boost
     private bool _isSpeedBoostActive = false;
     [SerializeField]
@@ -198,12 +200,14 @@ public class Player : MonoBehaviour
         if (_isTripleShotActive == true)
         {
             Instantiate(_tripleShotPrefab, transform.position, Quaternion.identity);
+            _audioSource.PlayOneShot(_laserShot, .45f);
             return;
         }
         
         if (_isHomingMissileActive == true)
         {
             Instantiate(_homingMissilePrefab, transform.position, Quaternion.identity);
+            _audioSource.PlayOneShot(_missileFire, 2.5f);
             return;
         }
 
