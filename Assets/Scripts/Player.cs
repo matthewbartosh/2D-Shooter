@@ -48,6 +48,7 @@ public class Player : MonoBehaviour
     [SerializeField]
     private int _collectionsRemaining = 3;
     //Triple Shot
+    [SerializeField]
     private bool _isTripleShotActive = false;
     [SerializeField]
     private float _tripleShotActivationTime = 5.0f;
@@ -87,6 +88,8 @@ public class Player : MonoBehaviour
     private AudioSource _audioSource;
     [SerializeField]
     private GameObject _camera;
+    private bool _godMode = false;
+    private bool _infiniteAmmo = false;
     
 
     // Start is called before the first frame update
@@ -146,6 +149,28 @@ public class Player : MonoBehaviour
         {
             CollectPowerups();
         }
+
+        if (Input.GetKeyDown(KeyCode.P) && _godMode == false)
+        { 
+            _godMode = true;
+            _uiManager.terText(true);
+        }
+        else if (Input.GetKeyDown(KeyCode.P) && _godMode == true)
+        {
+            _godMode = false;
+            _uiManager.terText(false);
+        }
+
+        if (Input.GetKeyDown(KeyCode.O) && _infiniteAmmo == false)
+        {
+            _infiniteAmmo = true;
+            _uiManager.CheaText(true);
+        }
+        else if (Input.GetKeyDown(KeyCode.O) && _infiniteAmmo == true)
+        {
+            _infiniteAmmo = false;
+            _uiManager.CheaText(false);
+        }
     }
 
     // CalculateMovement handles Player movement
@@ -165,7 +190,7 @@ public class Player : MonoBehaviour
             transform.Translate(direction * _speed * Time.deltaTime);
         }
 
-        transform.position = new Vector3(transform.position.x, Mathf.Clamp(transform.position.y, -6.6f, 0), 0);
+        transform.position = new Vector3(transform.position.x, Mathf.Clamp(transform.position.y, -6.6f, 1.2f), 0);
 
         if (transform.position.x > 16.15f)
         {
@@ -212,9 +237,11 @@ public class Player : MonoBehaviour
         }
 
         Instantiate(_laserPrefab, transform.position + new Vector3(0, 1.005f, 0), Quaternion.identity);
-        _currentAmmo--;
-        _uiManager.UpdateAmmo(_currentAmmo);
-        
+        if (_infiniteAmmo == false)
+        {
+            _currentAmmo--;
+            _uiManager.UpdateAmmo(_currentAmmo);
+        }
 
         _audioSource.PlayOneShot(_laserShot, .45f);
     }
@@ -241,7 +268,10 @@ public class Player : MonoBehaviour
 
         _audioSource.PlayOneShot(_damageFeedback, .85f);
 
-        _lives -= 1;
+        if (_godMode == false)
+        {
+            _lives -= 1;
+        }
 
         _camera.gameObject.SendMessage("ShakeCamera");
 

@@ -44,6 +44,11 @@ public class Laser : MonoBehaviour
 
         if (transform.position.y < -8f)
         {
+            if (transform.parent != null)
+            {
+                Destroy(transform.parent.gameObject);
+            }
+
             Destroy(this.gameObject);
         }
     }
@@ -62,6 +67,18 @@ public class Laser : MonoBehaviour
     {
         _isProEnemy = true;
         _isEnemyLaser = true;
+    }
+
+    public void AssignWingLasers()
+    {
+        _isEnemyLaser = true;
+        _speed = 25;
+    }
+
+    public void AssignPrimaryLasers()
+    {
+        _isEnemyLaser = true;
+        _speed = 20;
     }
 
     private void OnTriggerEnter2D(Collider2D other)

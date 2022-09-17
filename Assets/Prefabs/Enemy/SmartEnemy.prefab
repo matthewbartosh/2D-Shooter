@@ -53,7 +53,6 @@ MonoBehaviour:
   _explosionSound: {fileID: 8300000, guid: a885c043fab7e46438bba03ba9dab6bc, type: 3}
   _laserShot: {fileID: 8300000, guid: 75676f361bdfeaf41a46623e95df3dbc, type: 3}
   _enemyID: 2
-  _speed: 4
   _basicEnemy: 0
   _basicSpeed: 4
   _zigZagEnemy: 0
@@ -64,6 +63,11 @@ MonoBehaviour:
   _rammingSpeed: 8
   _doubleShotEnemy: 1
   _enemyDoubleLaser: {fileID: 1259623581105777922, guid: 2f31d67c68bd7f74aa0b9fd3511981be, type: 3}
+  _proEnemy: 0
+  _proSpeed: 3
+  _proLaser: {fileID: 0}
+  _rayBoxSize: {x: 2, y: 2}
+  _proSight: 3
 --- !u!212 &1377484208439297615
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -103,7 +107,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 635602361
   m_SortingLayer: 3
-  m_SortingOrder: 1
+  m_SortingOrder: 9
   m_Sprite: {fileID: 21300000, guid: 3154912113cbb4a498df6f571c74e18c, type: 3}
   m_Color: {r: 1, g: 0.4198113, b: 0.42506057, a: 1}
   m_FlipX: 0

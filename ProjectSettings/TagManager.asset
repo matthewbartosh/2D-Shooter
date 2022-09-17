@@ -12,6 +12,7 @@ TagManager:
   - Missile
   - Destroyed
   - ProLaser
+  - Boss
   layers:
   - Default
   - TransparentFX

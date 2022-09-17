@@ -574,7 +574,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'Created by: Matthew Bartosh @ Screamin'' Husky Studio'
+  m_Text: 'Created by: Wavespeaker @ Screamin'' Husky Studios'
 --- !u!222 &959555049
 CanvasRenderer:
   m_ObjectHideFlags: 0

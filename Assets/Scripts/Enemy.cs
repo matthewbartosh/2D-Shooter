@@ -14,7 +14,7 @@ public class Enemy : MonoBehaviour
     private GameObject _enemyLaser;
     private AudioSource _audioSource;
     [SerializeField]
-    private AudioClip _explosionSound;    
+    private AudioClip _explosionSound;
     [SerializeField]
     private AudioClip _laserShot;
     [SerializeField] // enemy types. 0 = basic enemy, 1 = zigzag + ram, 2 = double-shot + backfiring, 3 = pro enemy (destroys pickups, avoids shots)
@@ -65,13 +65,18 @@ public class Enemy : MonoBehaviour
     private bool _bossEnemy = false;
 
     //God Enemy (Everything all at once)
+    [SerializeField]
     private bool _godEnemy = false;
+    [SerializeField]
+    private float _godSpeed = 5f;
+    [SerializeField]
+    private float _godCanFire;
 
 
     void Start()
     {
         _audioSource = GetComponent<AudioSource>();
-        
+
         _player = GameObject.Find("Player").GetComponent<Player>();
 
         if (_player == null)
@@ -86,7 +91,7 @@ public class Enemy : MonoBehaviour
             Debug.LogError("Animator is NULL.");
         }
 
-        _bc = GetComponent<BoxCollider2D>(); 
+        _bc = GetComponent<BoxCollider2D>();
 
         if (_bc == null)
         {
@@ -120,6 +125,11 @@ public class Enemy : MonoBehaviour
                 _proEnemy = true;
                 _enemyShield = true;
                 _proCanFire = Time.time + Random.Range(2f, 5f);
+                break;
+            case 4:
+                _godEnemy = true;
+                _enemyShield = true;
+                _godCanFire = Time.time + Random.Range(.5f, 2f);
                 break;
         }
     }
@@ -178,7 +188,7 @@ public class Enemy : MonoBehaviour
                 if (hit.collider.CompareTag("Laser"))
                 {
                     Transform laser = hit.collider.GetComponent<Transform>();
-                    if( laser != null)
+                    if (laser != null)
                     {
                         if (laser.position.x > transform.position.x)
                         {
@@ -192,8 +202,60 @@ public class Enemy : MonoBehaviour
                 }
             }
         }
+        else if (_godEnemy == true)
+        {
+            if (Time.time > _godCanFire)
+            {
+                FireDoubleLaser();
+            }
+
+            RaycastHit2D hit = Physics2D.BoxCast(transform.position, _rayBoxSize, 0, Vector2.down, _proSight, LayerMask.GetMask("PlayerLaser"));
+
+            if (hit.collider != null)
+            {
+                if (hit.collider.CompareTag("Laser"))
+                {
+                    Transform laser = hit.collider.GetComponent<Transform>();
+                    if (laser != null)
+                    {
+                        if (laser.position.x > transform.position.x)
+                        {
+                            transform.Translate(_godSpeed * Time.deltaTime * new Vector3(-1, -1, 0));
+                        }
+                        else if (laser.position.x < transform.position.x)
+                        {
+                            transform.Translate(_godSpeed * Time.deltaTime * new Vector3(1, -1, 0));
+                        }
+                    }
+                }
+            }
+
+            if (_player != null)
+            {
+                _distance = Vector3.Distance(_player.transform.position, transform.position);
+
+                if (_distance < 4 && transform.position.y > _player.transform.position.y)
+                {
+                    Ram();
+                }
+                else
+                {
+                    transform.Translate(_godSpeed * Time.deltaTime * new Vector3(Mathf.Cos(Time.time * _zigZagAmount) * 2, -1, 0));
+                }
+            }
+            else
+            {
+                transform.Translate(_godSpeed * Time.deltaTime * new Vector3(Mathf.Cos(Time.time * _zigZagAmount) * 2, -1, 0));
+            }
+        }
 
         if (transform.position.y < -11f && _proEnemy == true)
+        {
+            transform.position = new Vector3(Random.Range(-14.55f, 14.55f), 10.8f, 0);
+            _enemyShield = true;
+            _shieldVisual.SetActive(true);
+        }
+        else if (transform.position.y < -11f && _godEnemy == true)
         {
             transform.position = new Vector3(Random.Range(-14.55f, 14.55f), 10.8f, 0);
             _enemyShield = true;
@@ -231,7 +293,6 @@ public class Enemy : MonoBehaviour
                 Instantiate(_destroyedEnemy, transform.position, Quaternion.identity);
                 Destroy(this.gameObject);
             }
-            //StartCoroutine(DeathAnim());
         }
         else if (other.CompareTag("Laser"))
         {
@@ -252,7 +313,6 @@ public class Enemy : MonoBehaviour
                 Instantiate(_destroyedEnemy, transform.position, Quaternion.identity);
                 Destroy(this.gameObject);
             }
-            //StartCoroutine(DeathAnim());
         }
         else if (other.CompareTag("Missile"))
         {
@@ -278,32 +338,8 @@ public class Enemy : MonoBehaviour
                 Instantiate(_destroyedEnemy, transform.position, Quaternion.identity);
                 Destroy(this.gameObject);
             }
-            //StartCoroutine(DeathAnim());
         }
     }
-
-    /*
-    IEnumerator DeathAnim()
-    {
-        
-        transform.tag = "Destroyed";
-        _anim.SetTrigger("OnEnemyDeath");
-        _canFire = Time.time + 10f;
-        _bc.enabled = false;
-        _speed = 1.5f;
-        _audioSource.Play();
-        if (transform.position.y >= -5.5f)
-        {
-            yield return new WaitForSeconds(2.35f);
-            Destroy(this.gameObject);
-        }
-        else if (transform.position.y < -5.5f)
-        {
-            yield return new WaitUntil(() => transform.position.y <= -10.5f);
-            Destroy(this.gameObject);
-        }
-      } 
-    */
    
     void FireLaser()
     {
@@ -333,6 +369,7 @@ public class Enemy : MonoBehaviour
         else
         {
             _canFire = Time.time + Random.Range(1f, 3f);
+            _proCanFire = Time.time + Random.Range(.5f, 2f);
 
             for (int i = 0; i < lasers.Length; i++)
             {
@@ -349,6 +386,16 @@ public class Enemy : MonoBehaviour
 
         GameObject enemyLaser = Instantiate(_enemyDoubleLaser, transform.position, Quaternion.identity);
         Laser[] lasers = enemyLaser.GetComponentsInChildren<Laser>();
+
+        if (_godEnemy == true)
+        {
+            _godCanFire = Time.time + Random.Range(.5f, 1.5f);
+
+            for (int i = 0; i < lasers.Length; i++)
+            {
+                lasers[i].AssignProLaser();
+            }
+        }
 
         if (_player != null)
         {
@@ -383,7 +430,7 @@ public class Enemy : MonoBehaviour
     IEnumerator ShieldHit()
     {
         _bc.enabled = false;
-        yield return new WaitForSeconds(1);
+        yield return new WaitForSeconds(.5f);
         _bc.enabled = true;
     }
 
