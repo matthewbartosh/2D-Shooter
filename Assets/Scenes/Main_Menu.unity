@@ -258,21 +258,18 @@ MonoBehaviour:
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
     m_FontSize: 14
-    m_FontStyle: 0
+    m_FontStyle: 1
     m_BestFit: 0
     m_MinSize: 10
     m_MaxSize: 40
-    m_Alignment: 0
+    m_Alignment: 4
     m_AlignByGeometry: 0
     m_RichText: 1
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: 'WASD to move
-
-    Space to shoot
-
-    ESC to exit'
+  m_Text: "WASD to move\nSpace to shoot\nLeft shift to boost\nC to Draw Powerups
+    to you \n(limited to 3 uses)\nESC to exit"
 --- !u!222 &535725763
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -577,7 +574,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'Created by: Matthew Bartosh @ Screamin'' Husky Studio'
+  m_Text: 'Created by: Wavespeaker @ Screamin'' Husky Studios'
 --- !u!222 &959555049
 CanvasRenderer:
   m_ObjectHideFlags: 0

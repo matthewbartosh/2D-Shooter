@@ -9,6 +9,10 @@ TagManager:
   - Powerup
   - UI
   - EnemyLaser
+  - Missile
+  - Destroyed
+  - ProLaser
+  - Boss
   layers:
   - Default
   - TransparentFX
@@ -16,7 +20,7 @@ TagManager:
   - 
   - Water
   - UI
-  - 
+  - PlayerLaser
   - 
   - Post Processing
   - 
